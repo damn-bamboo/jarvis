@@ -23,10 +23,21 @@ class SpeechListener:
         self.recognizer.dynamic_energy_threshold = True
         self.recognizer.pause_threshold = pause_threshold
         self._stop_event = threading.Event()
+        # pyaudio может отсутствовать (например, на Python 3.14) — не падаем:
+        # просто микрофон будет недоступен, используйте текстовый режим.
+        try:
+            sr.Microphone()
+            self.mic_available = True
+        except Exception:
+            self.mic_available = False
+            print("[mic] Микрофон недоступен (не установлен pyaudio или нет устройства). "
+                  "Работает текстовый ввод: python gui.py --text-only")
 
     # ------------------------------------------------------------------
     def listen_once(self, timeout=None, phrase_time_limit=8):
         """Слушает микрофон и возвращает распознанный текст (или '')."""
+        if not getattr(self, "mic_available", True):
+            return ""
         try:
             with sr.Microphone() as source:
                 self.recognizer.adjust_for_ambient_noise(source, duration=0.4)
