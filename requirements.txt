@@ -1,0 +1,9 @@
+SpeechRecognition
+pyttsx3
+pynput
+pygetwindow
+psutil
+requests
+comtypes
+PyQt6
+PyQt6-WebEngine
